@@ -4,8 +4,17 @@ import { LayerControll } from "./layers-controll";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const mapElementID = "map-element-id";
+
+export const modes = {
+    Residential: "Residential",
+    Commercial: "Commercial",
+    Industrial: "Industrial",
+    Transportation: "Transportation",
+    All: "All",
+};
+
 function App() {
-    const [mode, setMode] = useState("user");
+    const [mode, setMode] = useState(modes.All);
     const map = useRef();
     const controll = useRef();
 
@@ -14,30 +23,50 @@ function App() {
         map.current = new mapboxgl.Map({
             container: mapElementID,
             style: "mapbox://styles/mapbox/streets-v11",
-            center: [-94.63624739181586, 39.034489633830816], // starting position
+            center: [-94.63624739181586, 39.034489633830816],
             zoom: 14,
         });
-        controll.current = new LayerControll();
+        controll.current = new LayerControll(mode);
         map.current.addControl(controll.current);
+        // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        controll.current.setFilter(mode);
+    }, [mode]);
 
     return (
         <div className="App">
             <div className="test-panel">
                 <button
-                    onClick={() => setMode("admin")}
-                    className={mode === "admin" ? "test-panel__button-active" : ""}
+                    onClick={() => setMode(modes.All)}
+                    className={mode === modes.All ? "test-panel__button-active" : ""}
                 >
-                    ADMIN MODE
-                </button>
-                <button onClick={() => setMode("user")} className={mode === "user" ? "test-panel__button-active" : ""}>
-                    USER MODE
+                    All
                 </button>
                 <button
-                    onClick={() => setMode("highlight")}
-                    className={mode === "highlight" ? "test-panel__button-active" : ""}
+                    onClick={() => setMode(modes.Residential)}
+                    className={mode === modes.Residential ? "test-panel__button-active" : ""}
                 >
-                    HIGHLIGHT ZONE
+                    Residential
+                </button>
+                <button
+                    onClick={() => setMode(modes.Commercial)}
+                    className={mode === modes.Commercial ? "test-panel__button-active" : ""}
+                >
+                    Commercial
+                </button>
+                <button
+                    onClick={() => setMode(modes.Industrial)}
+                    className={mode === modes.Industrial ? "test-panel__button-active" : ""}
+                >
+                    Industrial
+                </button>
+                <button
+                    onClick={() => setMode(modes.Transportation)}
+                    className={mode === modes.Transportation ? "test-panel__button-active" : ""}
+                >
+                    Transportation
                 </button>
             </div>
             <div id={mapElementID}></div>
